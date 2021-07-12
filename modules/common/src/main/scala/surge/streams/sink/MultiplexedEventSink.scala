@@ -2,7 +2,7 @@
 
 package surge.streams.sink
 
-import surge.streams.EventSink
+import surge.streams.{ AbstractEventSink, EventSink }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -27,3 +27,5 @@ trait MultiplexedEventSink[Event] extends EventSink[Event] {
     Future.sequence(futureHandled)
   }
 }
+
+trait AbstractMultiplexedEventSink[Event] extends AbstractEventSink[Event] with MultiplexedEventSink[Event]

@@ -55,7 +55,7 @@ class KafkaEventSourceSpec extends TestKit(ActorSystem("EventSourceSpec")) with 
       .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
   }
 
-  private def testEventSink(probe: TestProbe): EventSink[String] = new EventSink[String] {
+  private def testEventSink(probe: TestProbe): EventSink[String] = new AbstractEventSink[String] {
     override def handleEvent(key: String, event: String, headers: Map[String, Array[Byte]]): Future[Any] = {
       probe.ref ! event
       Future.successful(Done)
@@ -146,7 +146,7 @@ class KafkaEventSourceSpec extends TestKit(ActorSystem("EventSourceSpec")) with 
         val consumer1 = createConsumer
         val consumerSettings = testConsumerSettings(embeddedBroker, groupId)
         val probe = TestProbe()
-        val testSink = new EventSink[String] {
+        val testSink = new AbstractEventSink[String] {
           override def handleEvent(key: String, event: String, headers: Map[String, Array[Byte]]): Future[Any] = {
             probe.ref ! event
             Future.successful(Done)
@@ -224,7 +224,7 @@ class KafkaEventSourceSpec extends TestKit(ActorSystem("EventSourceSpec")) with 
         val consumer1 = createConsumer
 
         val probe = TestProbe()
-        def createTestSink: EventSink[String] = new EventSink[String] {
+        def createTestSink: EventSink[String] = new AbstractEventSink[String] {
           private val expectedNumExceptions = 1
           private var exceptionCount = 0
           override def handleEvent(key: String, event: String, headers: Map[String, Array[Byte]]): Future[Any] = {
@@ -264,7 +264,7 @@ class KafkaEventSourceSpec extends TestKit(ActorSystem("EventSourceSpec")) with 
         val consumer1 = createConsumer
         val consumerSettings = testConsumerSettings(embeddedBroker, groupId)
         var count = 0
-        val countingEventSink = new EventSink[String] {
+        val countingEventSink = new AbstractEventSink[String] {
           override def handleEvent(key: String, event: String, headers: Map[String, Array[Byte]]): Future[Any] = {
             count += 1
             Future.successful(Done)

@@ -28,7 +28,7 @@ object FlowConverter {
       val flow = Flow[EventPlusStreamMeta[K, V, Meta]].mapAsync(1) { evtPlusMeta =>
         businessLogic(evtPlusMeta.messageKey, evtPlusMeta.messageBody, evtPlusMeta.headers)
           .recover { case e =>
-            exceptionHandler.handleException(evtPlusMeta.messageKey, evtPlusMeta.messageBody, evtPlusMeta.streamMeta, e)
+            exceptionHandler.handleException(evtPlusMeta, e)
           }
           .map(_ => evtPlusMeta.streamMeta)
       }

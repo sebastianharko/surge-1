@@ -19,6 +19,7 @@ import surge.internal.akka.kafka.AkkaKafkaConsumer
 import surge.internal.akka.streams.FlowConverter
 import surge.kafka.KafkaTopic
 import surge.kafka.streams.DefaultSerdes
+import surge.metrics.Metrics
 import surge.streams.{ DataHandler, EventPlusStreamMeta, OffsetManager }
 
 import scala.concurrent.duration._
@@ -54,7 +55,11 @@ class KafkaSubscriptionProviderSpec extends TestKit(ActorSystem("StreamManagerSp
     val partitionBy: (String, Array[Byte], Map[String, Array[Byte]]) => String = { (k, _, _) => k }
     val businessFlow = new DataHandler[String, Array[Byte]] {
       override def dataHandler[Meta]: Flow[EventPlusStreamMeta[String, Array[Byte], Meta], Meta, NotUsed] =
-        FlowConverter.flowFor[String, Array[Byte], Meta](tupleFlow, partitionBy, new DefaultDataSinkExceptionHandler, 16)
+        FlowConverter.flowFor[String, Array[Byte], Meta](
+          tupleFlow,
+          partitionBy,
+          new DefaultDataSinkExceptionHandlerWithSupport(Metrics.globalMetricRegistry, Map.empty, _.streamMeta.toString),
+          16)
     }
     new ManualOffsetManagementSubscriptionProvider(topic.name, Subscriptions.topics(topic.name), consumerSettings, businessFlow, offsetManager)
   }

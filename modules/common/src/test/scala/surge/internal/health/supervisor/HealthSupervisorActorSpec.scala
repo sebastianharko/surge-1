@@ -58,22 +58,22 @@ class HealthSupervisorActorSpec
       // Register
       whenReady(bus.register(probe.ref, componentName = "boomControl", Seq(Pattern.compile("boom")))) { done =>
         done shouldBe a[Ack]
-        val received = probe.receiveN(1, 10.seconds)
-        Option(received).nonEmpty shouldEqual true
+      val received = probe.receiveN(1, 10.seconds)
+      Option(received).nonEmpty shouldEqual true
 
-        // Signal
-        bus.signalWithTrace(name = "test.trace", Trace("test trace")).emit()
+      // Signal
+      bus.signalWithTrace(name = "test.trace", Trace("test trace")).emit()
 
-        eventually {
-          // Verify restart
-          val restart = probe.fishForMessage(max = 100.millis) { case msg =>
-            msg.isInstanceOf[RestartComponent]
-          }
-          Option(restart.asInstanceOf[RestartComponent].replyTo).isDefined shouldEqual true
+      eventually {
+        // Verify restart
+        val restart = probe.fishForMessage(max = 100.millis) { case msg =>
+          msg.isInstanceOf[RestartComponent]
         }
-
-        bus.unsupervise().signalStream().stop()
+        Option(restart.asInstanceOf[RestartComponent].replyTo).isDefined shouldEqual true
       }
+
+      bus.unsupervise().signalStream().stop()
+    }
     }
 
     "receive registration" in {
