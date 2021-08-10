@@ -15,8 +15,20 @@ jobs:
         run: 'sbt scalastyle && sbt "scalafmtCheckAll;scalafmtSbtCheck"'
       #- name: check-binary-compatibility
       #  run: 'sbt mimaReportBinaryIssues'
-      - name: test
-        run: 'sbt clean coverage test coverageReport coverageAggregate'
+      - name: test surge-common
+        run: 'sbt "project surge-common" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-docs
+        run: 'sbt "project surge-docs" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-engine-command-core
+        run: 'sbt "project surge-engine-command-core" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-engine-command-javadsl
+        run: 'sbt "project surge-engine-command-javadsl" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-engine-command-scaladsl
+        run: 'sbt "project surge-engine-command-scaladsl" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-metrics
+        run: 'sbt "project surge-engine-command-scaladsl" clean coverage test coverageReport coverageAggregate'
+      - name: test surge-rabbitmq-support
+        run: 'sbt "project surge-rabbitmq-support" clean coverage test coverageReport coverageAggregate'
       - name: publish test report
         uses: mikepenz/action-junit-report@v2
         if: 'always()'
