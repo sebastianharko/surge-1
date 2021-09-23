@@ -22,7 +22,7 @@ kubectl apply -f k8s/topics -n kafka
 
 To deploy surge app and business app on cluster use following command:
 ```sh
-kubectl apply -f k8s/kafka-persistent-single.yaml -n kafka 
+kubectl apply -f k8s/surge.yaml -n kafka 
 ```
 **Note:** Make sure to edit persistant volume size according to requirement.
 

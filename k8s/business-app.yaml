@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-app
+  labels:
+    app: business-app
+spec:
+  ports:
+  - port: 7777
+    name: business-app
+    targetPort: 7777
+  selector:
+    app: business-app
+  type: NodePort   
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-app
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: business-app
+  template:
+    metadata:
+      labels:
+        app: business-app
+    spec:
+      containers:
+      - name: business-app
+        image: surge-engine-multilanguage-poc-business-app:0.5.24-SNAPSHOT
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "500Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
+        ports:
+          - containerPort: 7777
+            name: business-app
+            protocol: TCP
+        env:       
+          - name: "SURGE_SERVER_HOST"
+            value: "surge-server"
+          - name: "SURGE_SERVER_PORT"
+            value: "6667"
+          - name: "LOCAL_SERVER_HOST"
+            value: "0.0.0.0"
+          - name: "LOCAL_SERVER_PORT"
+            value: "7777"
+          - name: "KAFKA_BROKERS"
+            value: "my-cluster-kafka-bootstrap:9092"
